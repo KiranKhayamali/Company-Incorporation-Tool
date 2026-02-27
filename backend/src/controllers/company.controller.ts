@@ -1,27 +1,34 @@
 import { Request, Response } from "express";
+import { ZodError } from "zod";
 import {
   createCompanyService,
   getAllCompaniesService,
   getCompanyByIdService,
   addShareholdersService
 } from "../services/company.service";
+import { createCompanySchema, addShareholdersSchema } from "../schemas/company.schema";
+
+const formatZodError = (error: ZodError) => {
+  return error.errors.map((err) => ({
+    field: err.path.join("."),
+    message: err.message,
+  }));
+};
 
 export const createCompany = async (req: Request, res: Response) => {
   try {
-    const { name, numberOfShareholders, totalCapital } = req.body;
+    const validated = createCompanySchema.parse(req.body);
 
-    if (!name || numberOfShareholders <= 0 || totalCapital <= 0) {
-      return res.status(400).json({ message: "Invalid input" });
-    }
-
-    const company = await createCompanyService({
-      name,
-      numberOfShareholders,
-      totalCapital
-    });
+    const company = await createCompanyService(validated);
 
     res.status(201).json(company);
   } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: formatZodError(error),
+      });
+    }
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -52,16 +59,22 @@ export const getCompanyById = async (req: Request, res: Response) => {
 export const addShareholders = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { shareholders } = req.body;
+    
+    const validated = addShareholdersSchema.parse({
+      companyId: id,
+      shareholders: req.body.shareholders,
+    });
 
-    if (!Array.isArray(shareholders)) {
-      return res.status(400).json({ message: "Invalid shareholders data" });
-    }
-
-    await addShareholdersService(id, shareholders);
+    await addShareholdersService(validated.companyId, validated.shareholders);
 
     res.status(201).json({ message: "Shareholders added successfully" });
-  } catch {
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: formatZodError(error),
+      });
+    }
     res.status(500).json({ message: "Server error" });
   }
 };
