@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Company {
+  id                   String        @id @default(uuid())
+  name                 String
+  numberOfShareholders Int
+  totalCapital         Float
+  createdAt            DateTime      @default(now())
+
+  shareholders         Shareholder[]
+}
+
+model Shareholder {
+  id          String   @id @default(uuid())
+  firstName   String
+  lastName    String
+  nationality String
+
+  company     Company  @relation(fields: [companyId], references: [id])
+  companyId   String
+}
