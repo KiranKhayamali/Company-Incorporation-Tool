@@ -31,10 +31,24 @@ export const addShareholdersService = async (
     nationality: string;
   }[]
 ) => {
-  return prisma.shareholder.createMany({
-    data: shareholders.map((s) => ({
-      ...s,
-      companyId
-    }))
+  return prisma.$transaction(async (tx) => {
+    const company = await tx.company.findUnique({
+      where: { id: companyId }
+    });
+
+    if (!company) {
+      throw new Error("Company not found");
+    }
+
+    if (shareholders.length !== company.numberOfShareholders) {
+      throw new Error("Shareholder count mismatch");
+    }
+
+    return tx.shareholder.createMany({
+      data: shareholders.map((s) => ({
+        ...s,
+        companyId
+      }))
+    });
   });
 };
