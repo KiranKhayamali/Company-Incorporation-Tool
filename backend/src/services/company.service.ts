@@ -1,10 +1,10 @@
 import { prisma } from "../prisma";
+import {
+  CreateCompanyInput,
+  AddShareholdersInput,
+} from "../schemas/company.schema";
 
-export const createCompanyService = async (data: {
-  name: string;
-  numberOfShareholders: number;
-  totalCapital: number;
-}) => {
+export const createCompanyService = async (data: CreateCompanyInput) => {
   return prisma.company.create({
     data
   });
@@ -25,11 +25,7 @@ export const getCompanyByIdService = async (id: string) => {
 
 export const addShareholdersService = async (
   companyId: string,
-  shareholders: {
-    firstName: string;
-    lastName: string;
-    nationality: string;
-  }[]
+  shareholders: AddShareholdersInput["shareholders"]
 ) => {
   return prisma.$transaction(async (tx) => {
     const company = await tx.company.findUnique({
