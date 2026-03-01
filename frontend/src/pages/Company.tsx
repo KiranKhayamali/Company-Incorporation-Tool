@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
+import PageContainer from "../components/layout/PageContainer";
+import Card from "../components/layout/Card";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
+import SectionTitle from "../components/ui/SectionTitle";
 
 const CompanyForm = () => {
   const navigate = useNavigate();
@@ -68,31 +73,33 @@ const CompanyForm = () => {
   };
 
   return (
-    <div className="container">
-      <h2>Company Information</h2>
+    <PageContainer>
+        <Card>
+            <SectionTitle>Company Information</SectionTitle>
 
-      <input
-        placeholder="Company Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+            <Input
+                placeholder="Company Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+            />
 
-      <input
-        type="number"
-        placeholder="Number of Shareholders"
-        value={numberOfShareholders}
-        onChange={(e) => setNumberOfShareholders(Number(e.target.value))}
-      />
+            <Input
+                type="number"
+                placeholder="Number of Shareholders"
+                value={numberOfShareholders}
+                onChange={(e) => setNumberOfShareholders(Number(e.target.value))}
+            />
 
-      <input
-        type="number"
-        placeholder="Total Capital"
-        value={totalCapital}
-        onChange={(e) => setTotalCapital(Number(e.target.value))}
-      />
+            <Input
+                type="number"
+                placeholder="Total Capital"
+                value={totalCapital}
+                onChange={(e) => setTotalCapital(Number(e.target.value))}
+            />
 
-      <button onClick={handleSubmit}>Next</button>
-    </div>
+            <Button onClick={handleSubmit}>Next</Button>
+        </Card>
+    </PageContainer>
   );
 };
 
