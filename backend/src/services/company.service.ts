@@ -48,3 +48,17 @@ export const addShareholdersService = async (
     });
   });
 };
+
+export const updateCompanyService = async (
+  id: string,
+  data: {
+    name: string;
+    numberOfShareholders: number;
+    totalCapital: number;
+  }
+) => {
+  return prisma.company.update({
+    where: { id },
+    data,
+  });
+};
