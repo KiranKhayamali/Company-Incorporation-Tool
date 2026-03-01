@@ -10,7 +10,7 @@ import {
 import { createCompanySchema, addShareholdersSchema } from "../schemas/company.schema";
 
 const formatZodError = (error: ZodError) => {
-  return error.errors.map((err) => ({
+  return error.issues.map((err) => ({
     field: err.path.join("."),
     message: err.message,
   }));
@@ -45,7 +45,7 @@ export const getCompanies = async (_req: Request, res: Response) => {
 
 export const getCompanyById = async (req: Request, res: Response) => {
   try {
-    const company = await getCompanyByIdService(req.params.id);
+    const company = await getCompanyByIdService(req.params.id as string);
 
     if (!company) {
       return res.status(404).json({ message: "Company not found" });
@@ -84,14 +84,14 @@ export const updateCompany = async (req: Request, res: Response) => {
   try {
     const { name, numberOfShareholders, totalCapital } = req.body;
 
-    const updated = await updateCompanyService(req.params.id, {
+    const updated = await updateCompanyService(req.params.id as string, {
       name,
       numberOfShareholders,
       totalCapital,
     });
 
     res.json(updated);
-  } catch {
+  } catch (error) {
     res.status(500).json({ message: "Update failed" });
   }
 };
