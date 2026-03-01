@@ -9,13 +9,22 @@ interface Shareholder {
 }
 
 const ShareholderForm = () => {
-const navigate = useNavigate();
+  const navigate = useNavigate();
   const [shareholders, setShareholders] = useState<Shareholder[]>([]);
   const companyId = localStorage.getItem("companyId");
 
+  // Load draft or initialize empty shareholder forms
   useEffect(() => {
     if (!companyId) return;
 
+    // Try to load draft first
+    const draft = localStorage.getItem("shareholdersDraft");
+    if (draft) {
+      setShareholders(JSON.parse(draft));
+      return;
+    }
+
+    // If no draft, initialize empty forms based on company data
     api.get(`/companies/${companyId}`).then((res) => {
       const count = res.data.numberOfShareholders;
       setShareholders(
@@ -26,7 +35,14 @@ const navigate = useNavigate();
         }))
       );
     });
-  }, []);
+  }, [companyId]);
+
+  // Auto-save draft whenever shareholder data changes
+  useEffect(() => {
+    if (shareholders.length > 0) {
+      localStorage.setItem("shareholdersDraft", JSON.stringify(shareholders));
+    }
+  }, [shareholders]);
 
   const handleChange = (
     index: number,
@@ -44,7 +60,10 @@ const navigate = useNavigate();
     });
 
     alert("Company Incorporated Successfully!");
+    // Clear all drafts and company ID after successful submission
     localStorage.removeItem("companyId");
+    localStorage.removeItem("companyDraft");
+    localStorage.removeItem("shareholdersDraft");
     navigate("/");
   };
 
@@ -58,6 +77,7 @@ const navigate = useNavigate();
 
           <input
             placeholder="First Name"
+            value={s.firstName}
             onChange={(e) =>
               handleChange(index, "firstName", e.target.value)
             }
@@ -65,6 +85,7 @@ const navigate = useNavigate();
 
           <input
             placeholder="Last Name"
+            value={s.lastName}
             onChange={(e) =>
               handleChange(index, "lastName", e.target.value)
             }
@@ -72,6 +93,7 @@ const navigate = useNavigate();
 
           <input
             placeholder="Nationality"
+            value={s.nationality}
             onChange={(e) =>
               handleChange(index, "nationality", e.target.value)
             }
