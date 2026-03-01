@@ -37,8 +37,12 @@ const ShareholderForm = () => {
     });
   }, [companyId]);
 
-  // Auto-save draft whenever shareholder data changes
   useEffect(() => {
+    if (!companyId) {
+        window.location.href = "/";
+    }
+    
+    // Auto-save draft whenever shareholder data changes
     if (shareholders.length > 0) {
       localStorage.setItem("shareholdersDraft", JSON.stringify(shareholders));
     }
@@ -68,7 +72,7 @@ const ShareholderForm = () => {
   };
 
   return (
-    <div>
+    <div className="container">
       <h2>Shareholders Information</h2>
 
       {shareholders.map((s, index) => (
