@@ -9,7 +9,19 @@ const CompanyForm = () => {
   const [numberOfShareholders, setNumberOfShareholders] = useState(1);
   const [totalCapital, setTotalCapital] = useState(0);
 
+  // Load draft or existing company data on mount
   useEffect(() => {
+    // Try to load draft first
+    const draft = localStorage.getItem("companyDraft");
+    if (draft) {
+      const data = JSON.parse(draft);
+      setName(data.name || "");
+      setNumberOfShareholders(data.numberOfShareholders || 1);
+      setTotalCapital(data.totalCapital || 0);
+      return;
+    }
+
+    // If no draft, try to load existing company data
     const companyId = localStorage.getItem("companyId");
     if (companyId) {
       api.get(`/companies/${companyId}`).then((res) => {
@@ -21,6 +33,16 @@ const CompanyForm = () => {
     }
   }, []);
 
+  // Auto-save draft whenever form data changes
+  useEffect(() => {
+    const draft = {
+      name,
+      numberOfShareholders,
+      totalCapital,
+    };
+    localStorage.setItem("companyDraft", JSON.stringify(draft));
+  }, [name, numberOfShareholders, totalCapital]);
+
   const handleSubmit = async () => {
     const response = await api.post("/companies", {
       name,
@@ -29,6 +51,8 @@ const CompanyForm = () => {
     });
 
     localStorage.setItem("companyId", response.data.id);
+    // Clear draft after successful submission
+    localStorage.removeItem("companyDraft");
     navigate("/shareholders");
   };
 
