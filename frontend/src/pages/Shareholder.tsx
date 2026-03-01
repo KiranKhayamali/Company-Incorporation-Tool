@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
 import { useNavigate } from "react-router-dom";
+import PageContainer from "../components/layout/PageContainer";
+import Card from "../components/layout/Card";
+import SectionTitle from "../components/ui/SectionTitle";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
 
 interface Shareholder {
   firstName: string;
@@ -41,7 +46,7 @@ const ShareholderForm = () => {
     if (!companyId) {
         window.location.href = "/";
     }
-    
+
     // Auto-save draft whenever shareholder data changes
     if (shareholders.length > 0) {
       localStorage.setItem("shareholdersDraft", JSON.stringify(shareholders));
@@ -72,41 +77,43 @@ const ShareholderForm = () => {
   };
 
   return (
-    <div className="container">
-      <h2>Shareholders Information</h2>
+    <PageContainer>
+        <Card>
+            <SectionTitle>Shareholders Information</SectionTitle>
 
-      {shareholders.map((s, index) => (
-        <div key={index}>
-          <h4>Shareholder {index + 1}</h4>
+            {shareholders.map((s, index) => (
+                <div key={index} className="mb-6 border border-gray-200 p-4 rounded-xl bg-gray-50">
+                <h4 className="font-semibold mb-3">Shareholder {index + 1}</h4>
 
-          <input
-            placeholder="First Name"
-            value={s.firstName}
-            onChange={(e) =>
-              handleChange(index, "firstName", e.target.value)
-            }
-          />
+                <Input
+                    placeholder="First Name"
+                    value={s.firstName}
+                    onChange={(e) =>
+                    handleChange(index, "firstName", e.target.value)
+                    }
+                />
 
-          <input
-            placeholder="Last Name"
-            value={s.lastName}
-            onChange={(e) =>
-              handleChange(index, "lastName", e.target.value)
-            }
-          />
+                <Input
+                    placeholder="Last Name"
+                    value={s.lastName}
+                    onChange={(e) =>
+                    handleChange(index, "lastName", e.target.value)
+                    }
+                />
 
-          <input
-            placeholder="Nationality"
-            value={s.nationality}
-            onChange={(e) =>
-              handleChange(index, "nationality", e.target.value)
-            }
-          />
-        </div>
-      ))}
+                <Input
+                    placeholder="Nationality"
+                    value={s.nationality}
+                    onChange={(e) =>
+                    handleChange(index, "nationality", e.target.value)
+                    }
+                />
+                </div>
+            ))}
 
-      <button onClick={handleSubmit}>Submit</button>
-    </div>
+            <Button onClick={handleSubmit}>Submit</Button>
+      </Card>
+    </PageContainer>
   );
 };
 
