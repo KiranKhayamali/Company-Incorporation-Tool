@@ -44,11 +44,22 @@ const CompanyForm = () => {
   }, [name, numberOfShareholders, totalCapital]);
 
   const handleSubmit = async () => {
-    const response = await api.post("/companies", {
-      name,
-      numberOfShareholders,
-      totalCapital,
-    });
+    const existingId = localStorage.getItem("companyId");
+    console.log("Submitting company id:", {existingId, name} );
+    let response;
+    if (existingId) {
+        response = await api.put(`/companies/${existingId}`, {
+            name,
+            numberOfShareholders,
+            totalCapital,
+        });
+    } else {
+        response = await api.post("/companies", {
+            name,
+            numberOfShareholders,
+            totalCapital,
+        });
+    };
 
     localStorage.setItem("companyId", response.data.id);
     // Clear draft after successful submission
@@ -57,7 +68,7 @@ const CompanyForm = () => {
   };
 
   return (
-    <div>
+    <div className="container">
       <h2>Company Information</h2>
 
       <input
@@ -84,5 +95,6 @@ const CompanyForm = () => {
     </div>
   );
 };
+
 
 export default CompanyForm;
