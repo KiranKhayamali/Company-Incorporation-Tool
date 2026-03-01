@@ -4,8 +4,7 @@ import {
   createCompanyService,
   getAllCompaniesService,
   getCompanyByIdService,
-  addShareholdersService,
-  updateCompanyService
+  addShareholdersService
 } from "../services/company.service";
 import { createCompanySchema, addShareholdersSchema } from "../schemas/company.schema";
 
@@ -77,21 +76,5 @@ export const addShareholders = async (req: Request, res: Response) => {
       });
     }
     res.status(500).json({ message: "Server error" });
-  }
-};
-
-export const updateCompany = async (req: Request, res: Response) => {
-  try {
-    const { name, numberOfShareholders, totalCapital } = req.body;
-
-    const updated = await updateCompanyService(req.params.id, {
-      name,
-      numberOfShareholders,
-      totalCapital,
-    });
-
-    res.json(updated);
-  } catch {
-    res.status(500).json({ message: "Update failed" });
   }
 };
